@@ -7,7 +7,7 @@ namespace Core.Data.Abstract
     public interface IEntityRepository<T> where T : class,IEntity,new()
     {
         //Table
-        public DbSet<T> Table { get; set; }
+        public DbSet<T> Table { get;}
         //Ekleme
         Task<bool> AddAsync(T entity);
         //Güncelleme
@@ -20,7 +20,6 @@ namespace Core.Data.Abstract
         IQueryable<T> GetAll(bool isTracking=true);
         IQueryable<T> GetAllByFilter(Expression<Func<T,bool>> expression,bool isTracking=true);
         Task<T> GetSingle(Expression<Func<T,bool>> expression, bool isTracking = true);
-        Task<T> GetById(int id,bool isTracking=true);
         Task<bool> AnyAsync(Expression<Func<T, bool>> expression, bool isTracking = true);
         Task<int> CountAsync(Expression<Func<T, bool>> expression, bool isTracking = true);
     }
