@@ -4,9 +4,8 @@ namespace DataAccess.Concrete.EntityFramework.Context
 {
     public class eReconciliationDb:DbContext
     {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public eReconciliationDb(DbContextOptions options) : base(options)
         {
-            optionsBuilder.UseSqlServer("server=localhost;database=eMutabakat;integrated security=true;");
         }
 
         public DbSet<AccountReconciliation> AccountReconciliations { get; set; }

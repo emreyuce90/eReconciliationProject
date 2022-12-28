@@ -1,4 +1,9 @@
-﻿using DataAccess.Abstract;
+﻿using Business.Abstract;
+using Business.Concrete;
+using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework.Context;
+using DataAccess.Concrete.EntityFramework.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -12,7 +17,23 @@ namespace Business.IoC
     {
         public static void AddBLLDependencies(this IServiceCollection services)
         {
-            services.AddScoped<IAccountReconciliationDal, EfAccountReconcilliationRepository>();
+            services.AddDbContext<eReconciliationDb>(opt=>opt.UseSqlServer("server=localhost;database=eMutabakat;integrated security=true;"));
+            //DAL
+            services.AddScoped<IAccountReconciliationDal, EfAccountReconciliationRepository>();
+            services.AddScoped<IAccountReconciliationDetailDal, EfAccountReconciliationDetailRepository>();
+            services.AddScoped<IBaBsReconciliationDal, EfBaBsReconciliationRepository>();
+            services.AddScoped<IBaBsReconciliationDetailDal, EfBaBsReconciliationDetailRepository>();
+            services.AddScoped<ICompanyDal, EfCompanyRepository>();
+            services.AddScoped<ICurrencyAccountDal, EfCurrencyAccountRepository>();
+            services.AddScoped<ICurrencyDal, EfCurrencyRepository>();
+            services.AddScoped<IMailParameterDal, EfMailParameterRepository>();
+            services.AddScoped<IOperationClaimDal, EfOperationClaimRepository>();
+            services.AddScoped<IUserCompanyDal, EfUserCompanyRepository>();
+            services.AddScoped<IUserDal, EfUserRepository>();
+            services.AddScoped<IUserOperationClaimDal, EfUserOperationClaimRepository>();
+
+            //BLL
+            services.AddScoped<ICompanyService, CompanyManager>();
         }
     }
 }
