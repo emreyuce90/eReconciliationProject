@@ -1,6 +1,5 @@
 ﻿using Core.Data.Abstract;
 using Core.Entities;
-using DataAccess.Concrete.EntityFramework.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
@@ -10,9 +9,9 @@ namespace Core.Data.Concrete
     public class EfEntityRepository<T> : IEntityRepository<T> where T : class, IEntity, new()
     {
 
-        private readonly eReconciliationDb _context;
+        private readonly DbContext _context;
 
-        public EfEntityRepository(eReconciliationDb context)
+        public EfEntityRepository(DbContext context)
         {
             _context = context;
         }

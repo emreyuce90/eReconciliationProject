@@ -7,15 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Abstract\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.12" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
