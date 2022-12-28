@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DataAccess.Abstract;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace Business.IoC
     {
         public static void AddBLLDependencies(this IServiceCollection services)
         {
-            //
+            services.AddScoped<IAccountReconciliationDal, EfAccountReconcilliationRepository>();
         }
     }
 }
