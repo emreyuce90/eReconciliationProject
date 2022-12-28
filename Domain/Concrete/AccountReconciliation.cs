@@ -1,5 +1,4 @@
 ﻿
-
 using Core.Entities;
 
 namespace Domain.Concrete
