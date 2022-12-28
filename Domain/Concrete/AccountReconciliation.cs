@@ -4,7 +4,7 @@ using Core.Entities;
 
 namespace Domain.Concrete
 {
-    internal class AccountReconciliation:IEntity
+    public class AccountReconciliation:IEntity
     {
         public int Id { get; set; }
         public int CompanyId { get; set; }
