@@ -18,5 +18,6 @@ namespace DataAccess.Concrete.EntityFramework.Repositories
         {
             _context = context;
         }
+
     }
 }

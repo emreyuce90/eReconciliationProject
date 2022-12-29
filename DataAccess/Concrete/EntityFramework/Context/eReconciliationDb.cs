@@ -1,4 +1,5 @@
-﻿using Domain.Concrete;
+﻿using Core.Entities.Concrete;
+using Domain.Concrete;
 using Microsoft.EntityFrameworkCore;
 namespace DataAccess.Concrete.EntityFramework.Context
 {
@@ -17,5 +18,8 @@ namespace DataAccess.Concrete.EntityFramework.Context
         public DbSet<CurrencyAccount> CurrencyAccounts { get; set; }
         public DbSet<MailParameter> MailParameters { get; set; }
         public DbSet<UserCompany> UserCompanies { get; set; }
+        public DbSet<OperationClaim> OperationClaims { get; set; }
+        public DbSet<UserOperationClaim> UserOperationClaims { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
