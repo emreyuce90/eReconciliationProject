@@ -7,6 +7,7 @@ using Domain.Concrete;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,19 +23,29 @@ namespace Business.Concrete
             _companyDal = companyDal;
         }
 
-        public async Task AddAsync(Company company)
+        public async Task<IResult> AddAsync(Company company)
         {
-            bool isAdded=await _companyDal.AddAsync(company);
+            bool isAdded = await _companyDal.AddAsync(company);
             if (isAdded)
             {
                 await _companyDal.SaveChangesAsync();
+                return new Result(ResultStatus.Success, $"{company} adlı firma başarıyla eklendi");
             }
+            return new Result(ResultStatus.Failed, $"{company.Name} adlı firma eklenemedi");
 
         }
 
-        public Task DeleteAsync(Company company)
+        public async Task<IResult> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            Company c = await _companyDal.GetSingle(c => c.Id == id, false);
+            bool isDeleted = _companyDal.Delete(c);
+            if (isDeleted)
+            {
+                await _companyDal.SaveChangesAsync();
+                return new Result(ResultStatus.Success, $"{c.Name} adlı firmaya ait tüm veriler başarıyla silindi");
+            }
+            return new Result(ResultStatus.Failed, "Bir hata meydana geldi");
+
         }
 
         public async Task<IDataResult<List<Company>>> GetAllAsync()
@@ -52,16 +63,22 @@ namespace Business.Concrete
             }
         }
 
-        public Task<Company> GetByIdAsync(int id)
+        public Task<IDataResult<Company>> GetByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task UpdateAsync(Company company)
+        public async Task<IResult> UpdateAsync(Company company)
         {
-            throw new NotImplementedException();
+            bool isUpdated = _companyDal.Update(company);
+            if (isUpdated)
+            {
+                await _companyDal.SaveChangesAsync();
+
+                return new Result(ResultStatus.Success,$"{company.Name} adlı firma bilgileri güncellendi");
+            }
+            return new Result(ResultStatus.Failed, $"Bir hata meydana geldi {company.Name} adlı firma bilgiler güncellenemedi");
+
         }
-
-
     }
 }

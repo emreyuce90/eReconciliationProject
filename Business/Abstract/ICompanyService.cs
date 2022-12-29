@@ -5,11 +5,11 @@ namespace Business.Abstract
 {
     public interface ICompanyService
     {
-        Task AddAsync(Company company);
-        Task UpdateAsync(Company company);
-        Task DeleteAsync(Company company);
+        Task<IResult> AddAsync(Company company);
+        Task<IResult> UpdateAsync(Company company);
+        Task<IResult>DeleteAsync(int id);
         Task<IDataResult<List<Company>>> GetAllAsync();
-        Task<Company> GetByIdAsync(int id);
+        Task<IDataResult<Company>> GetByIdAsync(int id);
 
     }
 }
