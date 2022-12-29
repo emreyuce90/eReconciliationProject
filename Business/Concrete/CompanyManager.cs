@@ -40,7 +40,16 @@ namespace Business.Concrete
         public async Task<IDataResult<List<Company>>> GetAllAsync()
         {
             var allCompanies = await _companyDal.GetAll().ToListAsync();
-            return new DataResult<List<Company>>(allCompanies,ResultStatus.Success, "Veritabanı sorgulama işlemi başarılı");
+            if (allCompanies.Count > -1)
+            {
+                return new DataResult<List<Company>>(allCompanies, ResultStatus.Success, "Veritabanı sorgulama başarılı");
+
+            }
+            else
+            {
+                return new DataResult<List<Company>>(allCompanies, ResultStatus.Failed, "Veritabanı sorgulama başarısız");
+
+            }
         }
 
         public Task<Company> GetByIdAsync(int id)

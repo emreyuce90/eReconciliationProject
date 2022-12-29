@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Core.Utilities.Result.ComplexTypes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,14 @@ namespace Web.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCompanies()
         {
-            return Ok(await _companyService.GetAllAsync());
+            var result = await _companyService.GetAllAsync();
+            if(result.ResultStatus == ResultStatus.Success)
+                return Ok(result);
+            return BadRequest(new
+            {
+                ErrorMessage = result.Exception.Message,
+                ResultStatus = result.ResultStatus
+            });
         }
     }
 }
