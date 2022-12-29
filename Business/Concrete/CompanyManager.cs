@@ -1,4 +1,7 @@
 ﻿using Business.Abstract;
+using Core.Utilities.Result.Abstract;
+using Core.Utilities.Result.ComplexTypes;
+using Core.Utilities.Result.Concrete;
 using DataAccess.Abstract;
 using Domain.Concrete;
 using Microsoft.EntityFrameworkCore;
@@ -34,10 +37,10 @@ namespace Business.Concrete
             throw new NotImplementedException();
         }
 
-        public async Task<List<Company>> GetAllAsync()
+        public async Task<IDataResult<List<Company>>> GetAllAsync()
         {
-            var companies =_companyDal.GetAll(false);
-            return await companies.ToListAsync();
+            var allCompanies = await _companyDal.GetAll().ToListAsync();
+            return new DataResult<List<Company>>(allCompanies,ResultStatus.Success, "Veritabanı sorgulama işlemi başarılı");
         }
 
         public Task<Company> GetByIdAsync(int id)
@@ -49,5 +52,7 @@ namespace Business.Concrete
         {
             throw new NotImplementedException();
         }
+
+
     }
 }
