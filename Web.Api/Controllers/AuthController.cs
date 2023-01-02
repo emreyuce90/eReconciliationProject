@@ -45,5 +45,20 @@ namespace Web.Api.Controllers
             
 
         }
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserLoginDto userLoginDto)
+        {
+            var loginResult=await _authService.Login(userLoginDto);
+            if(loginResult.ResultStatus == ResultStatus.Success)
+            {
+                var tokenResult= await _authService.CreateToken(loginResult.Data, 0);
+                if(tokenResult.ResultStatus== ResultStatus.Success)
+                {
+                    return Ok(tokenResult);
+                }
+                return BadRequest(tokenResult.Message);
+            }
+            return BadRequest(loginResult.Message);
+        }
     }
 }
