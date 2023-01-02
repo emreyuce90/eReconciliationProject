@@ -12,10 +12,11 @@ namespace Business.Concrete
     public class AuthManager : IAuthService
     {
         private readonly IUserService _userService;
-
-        public AuthManager(IUserService userService)
+        private readonly ITokenHelper _tokenHelper;
+        public AuthManager(IUserService userService, ITokenHelper tokenHelper)
         {
             _userService = userService;
+            _tokenHelper = tokenHelper;
         }
 
         public IResult CheckUserExist(string email)
@@ -23,9 +24,11 @@ namespace Business.Concrete
             throw new NotImplementedException();
         }
 
-        public IDataResult<AccessToken> CreateToken(User user)
+        public async Task<IDataResult<AccessToken>> CreateToken(User user, int companyId)
         {
-            throw new NotImplementedException();
+            var claimList = await _userService.GetOperationClaims(companyId, user);
+            var accessToken = _tokenHelper.CreateToken(user, claimList, companyId);
+            return new DataResult<AccessToken>(accessToken, ResultStatus.Success);
         }
 
         public async Task<IDataResult<User>> Login(UserLoginDto userLoginDto)

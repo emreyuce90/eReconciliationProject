@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Business.Concrete;
+using Core.Utilities.JWT;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework.Context;
 using DataAccess.Concrete.EntityFramework.Repositories;
@@ -36,6 +37,7 @@ namespace Business.IoC
             services.AddScoped<ICompanyService, CompanyManager>();
             services.AddScoped<IUserService,UserManager>();
             services.AddScoped<IAuthService, AuthManager>();
+            services.AddScoped<ITokenHelper, JwtHelper>();
         }
     }
 }

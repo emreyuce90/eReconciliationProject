@@ -18,7 +18,7 @@ namespace Business.Abstract
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        IDataResult<AccessToken> CreateToken(User user);
+        Task<IDataResult<AccessToken>> CreateToken(User user,int companyId);
         /// <summary>
         /// Kullanıcıyı veritabanına kayıt eder
         /// </summary>
