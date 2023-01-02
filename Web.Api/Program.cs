@@ -1,5 +1,6 @@
 using Business.IoC;
 using Core.Utilities.JWT;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,11 +10,24 @@ builder.Services.AddControllers();
 //Adding CORS
 builder.Services.AddCors(opt =>
 {
-    opt.AddPolicy("AllowOrigin",builder=>builder.WithOrigins("https://localhost:4200"));
+    opt.AddPolicy("AllowOrigin",builder=>builder.WithOrigins("https://localhost:7031/"));
 });
 //JWT registration
 var token = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>();
-builder.Services.AddAuthentication();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
+{
+    opt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer= true,
+        ValidateAudience= true,
+        ValidateLifetime= false,
+
+        ValidAudience=token.Audience,
+        ValidIssuer=token.Issuer,
+        ValidateIssuerSigningKey=true,
+        IssuerSigningKey=SecurityKeyHelper.CreateSecurityKey(token.SecurityKey)
+    };
+});
 
 
 
@@ -32,7 +46,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors(builder=>builder.WithOrigins("https://localhost:4200").AllowAnyHeader());
+app.UseCors(builder=>builder.WithOrigins("https://localhost:7031/").AllowAnyHeader());
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
