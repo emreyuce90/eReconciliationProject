@@ -19,9 +19,15 @@ namespace Business.Concrete
             _tokenHelper = tokenHelper;
         }
 
-        public IResult CheckUserExist(string email)
+        public async Task<IResult> CheckUserExist(string email)
         {
-            throw new NotImplementedException();
+           User user = await _userService.GetUserByEMail(email);
+            if (user != null)
+            {
+                return new Result(ResultStatus.Failed, "Sistemde zaten böyle bir kullanıcı kayıtlı");
+            }
+            return new Result(ResultStatus.Success);
+
         }
 
         public async Task<IDataResult<AccessToken>> CreateToken(User user, int companyId)
@@ -51,9 +57,24 @@ namespace Business.Concrete
 
         }
 
-        public IDataResult<User> Register(UserRegisterDto userRegisterDto)
+        public async Task<IDataResult<User>> Register(UserRegisterDto userRegisterDto)
         {
-            throw new NotImplementedException();
+            byte[] passwordHash, passwordSalt;
+            HashingHelper.CreatePasswordHash(userRegisterDto.Password, out passwordHash, out passwordSalt);
+            User user = new()
+            {
+                AddedAt = DateTime.Now,
+                EMail = userRegisterDto.EMail,
+                IsActive = true,
+                MailConfirm = false,
+                MailConfirmDate = DateTime.Now,
+                MailConfirmValue = Guid.NewGuid().ToString(),
+                Name = userRegisterDto.UserName,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt
+            };
+            await _userService.AddAsync(user);
+            return new DataResult<User>(user, ResultStatus.Success);
         }
     }
 }

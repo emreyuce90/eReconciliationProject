@@ -24,12 +24,12 @@ namespace Business.Abstract
         /// </summary>
         /// <param name="userRegisterDto"></param>
         /// <returns></returns>
-        IDataResult<User> Register(UserRegisterDto userRegisterDto);
+        Task<IDataResult<User>> Register(UserRegisterDto userRegisterDto);
         /// <summary>
         /// Kullanıcı var mı yok mu kontrol eder
         /// </summary>
         /// <param name="email">Parametre olarak kullanıcının e posta adresini alır</param>
         /// <returns></returns>
-        IResult CheckUserExist(string email);
+        Task<IResult> CheckUserExist(string email);
     }
 }
