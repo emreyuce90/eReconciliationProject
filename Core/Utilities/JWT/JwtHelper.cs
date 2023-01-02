@@ -29,7 +29,7 @@ namespace Core.Utilities.JWT
             var jwt = CreateJwtSecurityToken(_tokenOptions, user, signinCredentials, operationClaims, companyId);
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             var token = jwtSecurityTokenHandler.WriteToken(jwt);
-            return new AccessToken { CompanId= companyId ,ExpirationDate =_accessTokenExpiration,Token=token};
+            return new AccessToken { CompanyId= companyId ,ExpirationDate =_accessTokenExpiration,Token=token};
         }
         public JwtSecurityToken CreateJwtSecurityToken(TokenOptions tokenOptions, User user, SigningCredentials signingCredentials, List<OperationClaim> operationClaims, int companyId)
         {

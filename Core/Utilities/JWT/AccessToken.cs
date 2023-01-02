@@ -10,6 +10,6 @@ namespace Core.Utilities.JWT
     {
         public string Token { get; set; }
         public DateTime ExpirationDate { get; set; }
-        public int CompanId { get; set; }
+        public int CompanyId { get; set; }
     }
 }

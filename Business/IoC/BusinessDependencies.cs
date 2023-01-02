@@ -35,6 +35,7 @@ namespace Business.IoC
             //BLL
             services.AddScoped<ICompanyService, CompanyManager>();
             services.AddScoped<IUserService,UserManager>();
+            services.AddScoped<IAuthService, AuthManager>();
         }
     }
 }
