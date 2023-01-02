@@ -12,7 +12,7 @@ namespace Business.Abstract
         /// </summary>
         /// <param name="userLoginDto"></param>
         /// <returns></returns>
-        IDataResult<User> Login(UserLoginDto userLoginDto);
+        Task<IDataResult<User>> Login(UserLoginDto userLoginDto);
         /// <summary>
         /// Bir user alır ve bu user a bir token döner
         /// </summary>
