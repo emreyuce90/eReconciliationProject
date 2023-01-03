@@ -1,6 +1,7 @@
 ﻿using Core.Entities.Concrete;
 using Core.Utilities.JWT;
 using Core.Utilities.Result.Abstract;
+using Domain.Concrete;
 using Domain.Concrete.Dtos;
 
 namespace Business.Abstract
@@ -24,12 +25,13 @@ namespace Business.Abstract
         /// </summary>
         /// <param name="userRegisterDto"></param>
         /// <returns></returns>
-        Task<IDataResult<User>> Register(UserRegisterDto userRegisterDto);
+        Task<IDataResult<UserCompanyDto>> Register(UserRegisterDto userRegisterDto,Company company);
         /// <summary>
         /// Kullanıcı var mı yok mu kontrol eder
         /// </summary>
         /// <param name="email">Parametre olarak kullanıcının e posta adresini alır</param>
         /// <returns></returns>
         Task<IResult> CheckUserExist(string email);
+        Task<IResult> CheckCompanyExist(Company company);
     }
 }

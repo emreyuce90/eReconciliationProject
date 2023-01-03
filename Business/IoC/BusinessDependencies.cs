@@ -38,6 +38,7 @@ namespace Business.IoC
             services.AddScoped<IUserService,UserManager>();
             services.AddScoped<IAuthService, AuthManager>();
             services.AddScoped<ITokenHelper, JwtHelper>();
+            services.AddScoped<IUserCompanyService, UserCompanyManager>();
         }
     }
 }

@@ -18,22 +18,27 @@ namespace Web.Api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(UserRegisterDto userRegisterDto)
+        public async Task<IActionResult> Register(UserCompanyRegisterDto userCompanyRegisterDto)
         {
 
             //check user
-            var checkResult = await _authService.CheckUserExist(userRegisterDto.EMail);
-            if(checkResult.ResultStatus == ResultStatus.Success)
+            var checkResult = await _authService.CheckUserExist(userCompanyRegisterDto.UserRegisterDto.EMail);
+            //chekck company
+            var checkCompany = await _authService.CheckCompanyExist(userCompanyRegisterDto.Company);
+            if (checkResult.ResultStatus == ResultStatus.Success && checkCompany.ResultStatus == ResultStatus.Success)
             {
+                //hem userı hem de companyi authservice e gönderdik
                 var registerResult = await _authService.Register(new UserRegisterDto()
                 {
-                    EMail = userRegisterDto.EMail,
-                    Password = userRegisterDto.Password,
-                    UserName = userRegisterDto.UserName,
-                });
-                if(registerResult.ResultStatus == ResultStatus.Success)
+                    EMail = userCompanyRegisterDto.UserRegisterDto.EMail,
+                    Password = userCompanyRegisterDto.UserRegisterDto.Password,
+                    UserName = userCompanyRegisterDto.UserRegisterDto.UserName,
+                }, userCompanyRegisterDto.Company);
+
+                if (registerResult.ResultStatus == ResultStatus.Success)
                 {
-                    return Ok(registerResult);
+                    var tokenResult = _authService.CreateToken(registerResult.Data, userCompanyRegisterDto.Company.Id);
+                    return Ok(userCompanyRegisterDto);
                 }
                 else
                 {
@@ -41,18 +46,18 @@ namespace Web.Api.Controllers
 
                 }
             }
-            return BadRequest(checkResult.Message);
-            
+            return BadRequest($"Kullanıcı :{checkResult.Message}\n Şirket:{checkCompany.Message}");
+
 
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginDto userLoginDto)
         {
-            var loginResult=await _authService.Login(userLoginDto);
-            if(loginResult.ResultStatus == ResultStatus.Success)
+            var loginResult = await _authService.Login(userLoginDto);
+            if (loginResult.ResultStatus == ResultStatus.Success)
             {
-                var tokenResult= await _authService.CreateToken(loginResult.Data, 0);
-                if(tokenResult.ResultStatus== ResultStatus.Success)
+                var tokenResult = await _authService.CreateToken(loginResult.Data, 0);
+                if (tokenResult.ResultStatus == ResultStatus.Success)
                 {
                     return Ok(tokenResult);
                 }

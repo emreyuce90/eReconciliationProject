@@ -5,6 +5,7 @@ using Core.Utilities.JWT;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.ComplexTypes;
 using Core.Utilities.Result.Concrete;
+using Domain.Concrete;
 using Domain.Concrete.Dtos;
 
 namespace Business.Concrete
@@ -13,15 +14,30 @@ namespace Business.Concrete
     {
         private readonly IUserService _userService;
         private readonly ITokenHelper _tokenHelper;
-        public AuthManager(IUserService userService, ITokenHelper tokenHelper)
+        private readonly ICompanyService _companyService;
+        private readonly IUserCompanyService _userCompanyService;
+        public AuthManager(IUserService userService, ITokenHelper tokenHelper, ICompanyService companyService, IUserCompanyService userCompanyService)
         {
             _userService = userService;
             _tokenHelper = tokenHelper;
+            _companyService = companyService;
+            _userCompanyService = userCompanyService;
+        }
+
+        public async Task<IResult> CheckCompanyExist(Company company)
+        {
+            var cResult = await _companyService.IsCompanyExists(company);
+            if (cResult.ResultStatus == ResultStatus.Success)
+            {
+                return new Result(ResultStatus.Success);
+            }
+            return new Result(ResultStatus.Failed,"Firma ile ilgili bir hata meydana geldi");
+
         }
 
         public async Task<IResult> CheckUserExist(string email)
         {
-           User user = await _userService.GetUserByEMail(email);
+            User user = await _userService.GetUserByEMail(email);
             if (user != null)
             {
                 return new Result(ResultStatus.Failed, "Sistemde zaten böyle bir kullanıcı kayıtlı");
@@ -57,7 +73,7 @@ namespace Business.Concrete
 
         }
 
-        public async Task<IDataResult<User>> Register(UserRegisterDto userRegisterDto)
+        public async Task<IDataResult<UserCompanyDto>> Register(UserRegisterDto userRegisterDto,Company company)
         {
             byte[] passwordHash, passwordSalt;
             HashingHelper.CreatePasswordHash(userRegisterDto.Password, out passwordHash, out passwordSalt);
@@ -74,7 +90,25 @@ namespace Business.Concrete
                 PasswordSalt = passwordSalt
             };
             await _userService.AddAsync(user);
-            return new DataResult<User>(user, ResultStatus.Success);
+            //companyyi kaydet
+            await _companyService.AddAsync(company);
+            //usercompanyyi kaydet
+            await _userCompanyService.AddAsync(user.Id, company.Id);
+            UserCompanyDto userCompanyDto = new UserCompanyDto()
+            {
+                AddedAt=user.AddedAt,
+                CompanyId=company.Id,
+                EMail=user.EMail,
+                IsActive= true,
+                MailConfirm=user.MailConfirm,
+                MailConfirmDate=user.MailConfirmDate,
+                MailConfirmValue=user.MailConfirmValue,
+                Name=user.Name,
+                PasswordHash=user.PasswordHash,
+                Id=user.Id,
+                PasswordSalt=user.PasswordSalt
+            };
+            return new DataResult<UserCompanyDto>(userCompanyDto, ResultStatus.Success);
         }
     }
 }

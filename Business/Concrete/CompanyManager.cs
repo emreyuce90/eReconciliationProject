@@ -68,6 +68,17 @@ namespace Business.Concrete
             throw new NotImplementedException();
         }
 
+        public async Task<IResult> IsCompanyExists(Company company)
+        {
+           bool isExists =await _companyDal.IsCompanyExists(company);
+            if (isExists)
+            {
+                return new Result(ResultStatus.Success);
+            }
+            return new Result(ResultStatus.Failed);
+
+        }
+
         public async Task<IResult> UpdateAsync(Company company)
         {
             bool isUpdated = _companyDal.Update(company);

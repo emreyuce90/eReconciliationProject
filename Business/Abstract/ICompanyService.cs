@@ -11,5 +11,7 @@ namespace Business.Abstract
         Task<IDataResult<List<Company>>> GetAllAsync();
         Task<IDataResult<Company>> GetByIdAsync(int id);
 
+        Task<IResult> IsCompanyExists(Company company);
+
     }
 }
