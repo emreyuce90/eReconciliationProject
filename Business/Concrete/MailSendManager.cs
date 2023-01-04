@@ -20,6 +20,7 @@ namespace Business.Concrete
             smtpClient.UseDefaultCredentials = false;
             smtpClient.Credentials = new NetworkCredential(mailSendDto.MailParameter.EMail, mailSendDto.MailParameter.Password);
             smtpClient.EnableSsl = mailSendDto.MailParameter.SSL;
+            smtpClient.Port = mailSendDto.MailParameter.Port;
             smtpClient.Send(mailMessage);
         }
     }

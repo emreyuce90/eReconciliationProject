@@ -37,7 +37,7 @@ namespace Web.Api.Controllers
 
                 if (registerResult.ResultStatus == ResultStatus.Success)
                 {
-                    var tokenResult = _authService.CreateToken(registerResult.Data, userCompanyRegisterDto.Company.Id);
+                    var tokenResult = await _authService.CreateToken(registerResult.Data, userCompanyRegisterDto.Company.Id);
                     return Ok(tokenResult);
                 }
                 else
