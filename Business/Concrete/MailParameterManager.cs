@@ -38,9 +38,9 @@ namespace Business.Concrete
 
         }
 
-        public async Task<MailParameter> Get(int id)
+        public async Task<MailParameter> Get(int companyId)
         {
-           var mp=await _mailParameterDal.GetSingle(m => m.Id == id);
+           var mp=await _mailParameterDal.GetSingle(m => m.CompanyId == companyId);
             return mp;
         }
 

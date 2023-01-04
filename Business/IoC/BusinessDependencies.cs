@@ -40,6 +40,8 @@ namespace Business.IoC
             services.AddScoped<ITokenHelper, JwtHelper>();
             services.AddScoped<IUserCompanyService, UserCompanyManager>();
             services.AddScoped<IMailParameterService, MailParameterManager>();
+            services.AddScoped<IMailSendService,MailSendManager>();
+            
         }
     }
 }

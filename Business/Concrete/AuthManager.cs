@@ -12,16 +12,20 @@ namespace Business.Concrete
 {
     public class AuthManager : IAuthService
     {
+        private readonly IMailParameterService _mailParameterService;
+        private readonly IMailSendService _mailSendService;
         private readonly IUserService _userService;
         private readonly ITokenHelper _tokenHelper;
         private readonly ICompanyService _companyService;
         private readonly IUserCompanyService _userCompanyService;
-        public AuthManager(IUserService userService, ITokenHelper tokenHelper, ICompanyService companyService, IUserCompanyService userCompanyService)
+        public AuthManager(IUserService userService, ITokenHelper tokenHelper, ICompanyService companyService, IUserCompanyService userCompanyService, IMailParameterService mailParameterService, IMailSendService mailSendService)
         {
             _userService = userService;
             _tokenHelper = tokenHelper;
             _companyService = companyService;
             _userCompanyService = userCompanyService;
+            _mailParameterService = mailParameterService;
+            _mailSendService = mailSendService;
         }
 
         public async Task<IResult> CheckCompanyExist(Company company)
@@ -31,7 +35,7 @@ namespace Business.Concrete
             {
                 return new Result(ResultStatus.Success);
             }
-            return new Result(ResultStatus.Failed,"Firma ile ilgili bir hata meydana geldi");
+            return new Result(ResultStatus.Failed, "Firma ile ilgili bir hata meydana geldi");
 
         }
 
@@ -73,7 +77,7 @@ namespace Business.Concrete
 
         }
 
-        public async Task<IDataResult<UserCompanyDto>> Register(UserRegisterDto userRegisterDto,Company company)
+        public async Task<IDataResult<UserCompanyDto>> Register(UserRegisterDto userRegisterDto, Company company)
         {
             byte[] passwordHash, passwordSalt;
             HashingHelper.CreatePasswordHash(userRegisterDto.Password, out passwordHash, out passwordSalt);
@@ -96,18 +100,29 @@ namespace Business.Concrete
             await _userCompanyService.AddAsync(user.Id, company.Id);
             UserCompanyDto userCompanyDto = new UserCompanyDto()
             {
-                AddedAt=user.AddedAt,
-                CompanyId=company.Id,
-                EMail=user.EMail,
-                IsActive= true,
-                MailConfirm=user.MailConfirm,
-                MailConfirmDate=user.MailConfirmDate,
-                MailConfirmValue=user.MailConfirmValue,
-                Name=user.Name,
-                PasswordHash=user.PasswordHash,
-                Id=user.Id,
-                PasswordSalt=user.PasswordSalt
+                AddedAt = user.AddedAt,
+                CompanyId = company.Id,
+                EMail = user.EMail,
+                IsActive = true,
+                MailConfirm = user.MailConfirm,
+                MailConfirmDate = user.MailConfirmDate,
+                MailConfirmValue = user.MailConfirmValue,
+                Name = user.Name,
+                PasswordHash = user.PasswordHash,
+                Id = user.Id,
+                PasswordSalt = user.PasswordSalt
             };
+            //mail parameter
+            var mailParameters = await _mailParameterService.Get(3);
+            MailSendDto msDto = new()
+            {
+                ToEmail = userCompanyDto.EMail,
+                Body = "Hesabınız oluşturulmuştur.Lütfen email adresinize gelen aktivasyon linkine tıklayıp hesabınızı aktif ediniz",
+                Subject = "Hesap Aktivasyonu",
+                MailParameter = mailParameters
+            };
+
+            _mailSendService.SendMailAsync(msDto);
             return new DataResult<UserCompanyDto>(userCompanyDto, ResultStatus.Success);
         }
     }
