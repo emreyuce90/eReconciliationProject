@@ -113,6 +113,7 @@ namespace Business.Concrete
                 PasswordSalt = user.PasswordSalt
             };
             //mail parameter
+            
             var mailParameters = await _mailParameterService.Get(3);
             MailSendDto msDto = new()
             {
@@ -121,8 +122,17 @@ namespace Business.Concrete
                 Subject = "Hesap Aktivasyonu",
                 MailParameter = mailParameters
             };
+            try
+            {
+                _mailSendService.SendMailAsync(msDto);
+            }
+            catch (Exception ex)
+            {
 
-            _mailSendService.SendMailAsync(msDto);
+                return new DataResult<UserCompanyDto>(userCompanyDto, ResultStatus.Failed,ex.Message);
+
+            }
+
             return new DataResult<UserCompanyDto>(userCompanyDto, ResultStatus.Success);
         }
     }
