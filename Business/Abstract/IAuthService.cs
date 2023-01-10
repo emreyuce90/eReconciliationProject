@@ -33,6 +33,9 @@ namespace Business.Abstract
         /// <returns></returns>
         Task<IResult> CheckUserExist(string email);
         Task<IResult> CheckCompanyExist(Company company);
-        Task<string> SendEmailAsync(User user);
+        Task<IDataResult<string>> SendEmailAsync(User user);
+        Task<IResult> SendConfirmEmailAsync(User user);
+
+        Task<IDataResult<UserCompany>> GetUsersCompanyByUserIdAsync(int userId);
     }
 }

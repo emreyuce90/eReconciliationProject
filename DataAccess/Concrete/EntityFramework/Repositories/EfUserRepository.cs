@@ -2,6 +2,7 @@
 using Core.Entities.Concrete;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework.Context;
+using Domain.Concrete;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Concrete.EntityFramework.Repositories
@@ -12,6 +13,16 @@ namespace DataAccess.Concrete.EntityFramework.Repositories
         public EfUserRepository(eReconciliationDb context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<UserCompany> GetUserCompanyByUserIdAsync(int userId)
+        {
+            UserCompany? uc = await _context.UserCompanies.FirstOrDefaultAsync(c => c.UserId == userId);
+            if (uc != null)
+            {
+                return uc;
+            }
+            throw new Exception(message: "Bir hata meydana geldi");
         }
 
         public async Task<List<OperationClaim>> ListClaims(int companyId, User user)

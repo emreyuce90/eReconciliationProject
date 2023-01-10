@@ -1,4 +1,5 @@
 ﻿using Core.Entities.Concrete;
+using Domain.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,6 @@ namespace Business.Abstract
         Task<User> GetUserByUserId(int id);
         Task<bool> UpdateUser(User user);
         Task<User> GetUserByConfirmValue(string confirmValue);
+        Task<UserCompany> GetUserCompanyByUserIdAsync(int userId);
     }
 }

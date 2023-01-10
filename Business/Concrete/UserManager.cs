@@ -1,6 +1,7 @@
 ﻿using Business.Abstract;
 using Core.Entities.Concrete;
 using DataAccess.Abstract;
+using Domain.Concrete;
 
 namespace Business.Concrete
 {
@@ -43,6 +44,11 @@ namespace Business.Concrete
                 return user;
             }
             return null;
+        }
+
+        public async Task<UserCompany> GetUserCompanyByUserIdAsync(int userId)
+        {
+            return await _userDal.GetUserCompanyByUserIdAsync(userId);
         }
 
         public async Task<bool> UpdateUser(User user)

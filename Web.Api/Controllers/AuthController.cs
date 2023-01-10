@@ -55,9 +55,15 @@ namespace Web.Api.Controllers
         public async Task<IActionResult> Login(UserLoginDto userLoginDto)
         {
             var loginResult = await _authService.Login(userLoginDto);
+            if(!loginResult.Data.IsActive)
+                return BadRequest("Kullanıcı aktif değil");
+
             if (loginResult.ResultStatus == ResultStatus.Success)
             {
-                var tokenResult = await _authService.CreateToken(loginResult.Data, 0);
+                //kullanıcıa ait companyId yi çekelim
+                var uc = await _authService.GetUsersCompanyByUserIdAsync(loginResult.Data.Id);
+                //companyId yi de token ın içerisine dolduralım
+                var tokenResult = await _authService.CreateToken(loginResult.Data,uc.Data.CompanyId);
                 if (tokenResult.ResultStatus == ResultStatus.Success)
                 {
                     return Ok(tokenResult);
@@ -82,13 +88,18 @@ namespace Web.Api.Controllers
             return BadRequest("Kullanıcı veya onay hatası");
         }
 
-        [HttpGet]
+        [HttpGet("sendConfirmMail")]
         public async Task<IActionResult> ReConfirmByUser(int userId)
         {
             var user = await _userService.GetUserByUserId(userId);
             //email gönderme operasyonu
-            await _authService.SendEmailAsync(user);
-            return Ok("Mail gönderimi başarılı");
+            var result = await _authService.SendConfirmEmailAsync(user);
+            if(result.ResultStatus == ResultStatus.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+            
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class UserLoginDto
     {
-        public string EMail { get; set; }
-        public string Password { get; set; }
+        public string EMail { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 }

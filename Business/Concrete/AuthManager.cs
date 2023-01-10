@@ -59,6 +59,11 @@ namespace Business.Concrete
             return new DataResult<AccessToken>(accessToken, ResultStatus.Success);
         }
 
+        public async Task<IDataResult<UserCompany>> GetUsersCompanyByUserIdAsync(int userId)
+        {
+            return new DataResult<UserCompany>(await _userService.GetUserCompanyByUserIdAsync(userId),ResultStatus.Success);
+        }
+
         public async Task<IDataResult<User>> Login(UserLoginDto userLoginDto)
         {
             //check user
@@ -119,7 +124,34 @@ namespace Business.Concrete
             return new DataResult<UserCompanyDto>(userCompanyDto, ResultStatus.Success);
         }
 
-        public async Task<string> SendEmailAsync(User user)
+        public async Task<IResult> SendConfirmEmailAsync(User user)
+        {
+            //eğer kullanıcı maili zaten onaylandıysa
+            if(user.MailConfirm == true)
+            {
+                return new Result(ResultStatus.Failed, "Bu mail adresi zaten onaylanmış");
+            }
+
+            if(user.MailConfirmDate.ToShortDateString() == DateTime.Now.ToShortDateString()) 
+            {
+                if (user.MailConfirmDate.Hour == DateTime.Now.Hour && user.MailConfirmDate.AddMinutes(5).Minute <= DateTime.Now.Minute)
+                {
+                    //mail gönder
+                    await SendEmailAsync(user);
+                    return new Result(ResultStatus.Success);
+
+                }
+                else
+                {
+                    return new Result(ResultStatus.Failed, "Lütfen 5dk sonra yeniden deneyiniz");
+
+                }
+            }
+
+            return new Result(ResultStatus.Success);
+        }
+
+        public async Task<IDataResult<string>> SendEmailAsync(User user)
         {
             //html kodları
             string link = $"https://localhost:7031/api/auth/confirmMail/{user.MailConfirmValue}";
@@ -151,14 +183,19 @@ namespace Business.Concrete
             {
                 //mail gönderimi
                 _mailSendService.SendMailAsync(msDto);
-                return $"Mail gönderimi başarılı";
+                user.MailConfirmDate=DateTime.Now;
+                await _userService.UpdateUser(user);
+                return new DataResult<string>(null, ResultStatus.Success, "Mail gönderimi başarılı");
             }
             catch (Exception ex)
             {
 
-                return ex.Message;
+                return new DataResult<string>(null, ResultStatus.Failed, $"Mail gönderimi başarısız. Oluşan hatalar: {ex.Message}");
+
 
             }
         }
+
+
     }
 }
