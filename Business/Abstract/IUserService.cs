@@ -12,5 +12,7 @@ namespace Business.Abstract
         Task<List<OperationClaim>> GetOperationClaims(int companyId, User user);
         Task AddAsync(User user);
         Task<User> GetUserByEMail(string email);
+        Task<User> GetUserByUserId(int id);
+        Task<bool> UpdateUser(User user);
     }
 }

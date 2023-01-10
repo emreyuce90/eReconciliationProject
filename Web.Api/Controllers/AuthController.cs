@@ -11,10 +11,11 @@ namespace Web.Api.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-
-        public AuthController(IAuthService authService)
+        private readonly IUserService _userService;
+        public AuthController(IAuthService authService, IUserService userService)
         {
             _authService = authService;
+            _userService = userService;
         }
 
         [HttpPost("register")]
@@ -64,6 +65,21 @@ namespace Web.Api.Controllers
                 return BadRequest(tokenResult.Message);
             }
             return BadRequest(loginResult.Message);
+        }
+
+        [HttpGet("confirmMail")]
+        public async Task<IActionResult> ConfirmMail(int userId, string confirmValue)
+        {
+            var user = await _userService.GetUserByUserId(userId);
+            if (user.MailConfirmValue == confirmValue)
+            {
+                user.MailConfirmDate = DateTime.Now;
+                user.MailConfirm = true;
+                await _userService.UpdateUser(user);
+                return Ok();
+
+            }
+            return BadRequest("Kullanıcı veya onay hatası");
         }
     }
 }

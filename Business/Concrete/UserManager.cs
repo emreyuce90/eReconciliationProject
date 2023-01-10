@@ -28,5 +28,22 @@ namespace Business.Concrete
         {
             return await _userDal.GetSingle(u => u.EMail == email);
         }
+
+        public async Task<User> GetUserByUserId(int id)
+        {
+           User? user= await _userDal.GetSingle(u => u.Id == id);
+            if(user != null)
+            {
+                return user;
+            }
+            return null;
+        }
+
+        public async Task<bool> UpdateUser(User user)
+        {
+            _userDal.Update(user);
+            await _userDal.SaveChangesAsync();
+            return true;
+        }
     }
 }

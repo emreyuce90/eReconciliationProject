@@ -32,6 +32,7 @@ namespace Business.IoC
             services.AddScoped<IUserCompanyDal, EfUserCompanyRepository>();
             services.AddScoped<IUserDal, EfUserRepository>();
             services.AddScoped<IUserOperationClaimDal, EfUserOperationClaimRepository>();
+            services.AddScoped<IMailTemplateDal, EfMailTemplateRepository>();
 
             //BLL
             services.AddScoped<ICompanyService, CompanyManager>();
@@ -41,6 +42,7 @@ namespace Business.IoC
             services.AddScoped<IUserCompanyService, UserCompanyManager>();
             services.AddScoped<IMailParameterService, MailParameterManager>();
             services.AddScoped<IMailSendService,MailSendManager>();
+            services.AddScoped<IMailTemplateService, MailTemplateManager>();
             
         }
     }

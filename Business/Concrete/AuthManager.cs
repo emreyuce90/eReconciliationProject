@@ -12,13 +12,14 @@ namespace Business.Concrete
 {
     public class AuthManager : IAuthService
     {
+        private readonly IMailTemplateService _mailTemplateService;
         private readonly IMailParameterService _mailParameterService;
         private readonly IMailSendService _mailSendService;
         private readonly IUserService _userService;
         private readonly ITokenHelper _tokenHelper;
         private readonly ICompanyService _companyService;
         private readonly IUserCompanyService _userCompanyService;
-        public AuthManager(IUserService userService, ITokenHelper tokenHelper, ICompanyService companyService, IUserCompanyService userCompanyService, IMailParameterService mailParameterService, IMailSendService mailSendService)
+        public AuthManager(IUserService userService, ITokenHelper tokenHelper, ICompanyService companyService, IUserCompanyService userCompanyService, IMailParameterService mailParameterService, IMailSendService mailSendService, IMailTemplateService mailTemplateService)
         {
             _userService = userService;
             _tokenHelper = tokenHelper;
@@ -26,6 +27,7 @@ namespace Business.Concrete
             _userCompanyService = userCompanyService;
             _mailParameterService = mailParameterService;
             _mailSendService = mailSendService;
+            _mailTemplateService = mailTemplateService;
         }
 
         public async Task<IResult> CheckCompanyExist(Company company)
@@ -112,24 +114,44 @@ namespace Business.Concrete
                 Id = user.Id,
                 PasswordSalt = user.PasswordSalt
             };
-            //mail parameter
-            
+
+         
+
+            //html kodları
+            string link = $"https://localhost:7031/api/auth/mailConfirm/{user.MailConfirmValue}";
+            string linkDescription = "Kaydı onaylamak için tıklayınız";
+            string titleMessage = "Size gelen maili en geç 48 saat içerisinde onaylamalısınız";
+            string message = "Hesabınız oluşturulmuştur.Lütfen email adresinize gelen aktivasyon linkine tıklayıp hesabınızı aktif ediniz";
+            string title = "Mail Onayı";
+
+            //mail template i manipüle etme
+            var templateResult = await _mailTemplateService.GetMailTemplateById(2, "MailOnay");
+            var mailData = templateResult.Data.Value;
+            mailData = mailData.Replace("{{title}}", title);
+            mailData = mailData.Replace("{{message}}", message);
+            mailData = mailData.Replace("{{titleMessage}}", titleMessage);
+            mailData = mailData.Replace("{{link}}", link);
+            mailData = mailData.Replace("{{linkDescription}}", linkDescription);
+
+            //mail sendDto nesnesini doldurma 
+
             var mailParameters = await _mailParameterService.Get(3);
             MailSendDto msDto = new()
             {
                 ToEmail = userCompanyDto.EMail,
-                Body = "Hesabınız oluşturulmuştur.Lütfen email adresinize gelen aktivasyon linkine tıklayıp hesabınızı aktif ediniz",
+                Body = mailData,
                 Subject = "Hesap Aktivasyonu",
                 MailParameter = mailParameters
             };
             try
             {
+                //mail gönderimi
                 _mailSendService.SendMailAsync(msDto);
             }
             catch (Exception ex)
             {
 
-                return new DataResult<UserCompanyDto>(userCompanyDto, ResultStatus.Failed,ex.Message);
+                return new DataResult<UserCompanyDto>(userCompanyDto, ResultStatus.Failed, ex.Message);
 
             }
 
