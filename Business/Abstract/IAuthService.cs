@@ -33,5 +33,6 @@ namespace Business.Abstract
         /// <returns></returns>
         Task<IResult> CheckUserExist(string email);
         Task<IResult> CheckCompanyExist(Company company);
+        Task<string> SendEmailAsync(User user);
     }
 }

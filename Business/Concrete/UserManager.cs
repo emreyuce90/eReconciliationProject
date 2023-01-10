@@ -24,6 +24,12 @@ namespace Business.Concrete
             return await _userDal.ListClaims(companyId, user);
         }
 
+        public async Task<User> GetUserByConfirmValue(string confirmValue)
+        {
+            User u =await _userDal.GetSingle(u=>u.MailConfirmValue == confirmValue);
+            return u;
+        }
+
         public async Task<User> GetUserByEMail(string email)
         {
             return await _userDal.GetSingle(u => u.EMail == email);

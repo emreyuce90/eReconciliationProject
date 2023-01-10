@@ -67,10 +67,10 @@ namespace Web.Api.Controllers
             return BadRequest(loginResult.Message);
         }
 
-        [HttpGet("confirmMail")]
-        public async Task<IActionResult> ConfirmMail(int userId, string confirmValue)
+        [HttpGet("confirmMail/{confirmValue}")]
+        public async Task<IActionResult> ConfirmMail([FromRoute]string confirmValue)
         {
-            var user = await _userService.GetUserByUserId(userId);
+            var user = await _userService.GetUserByConfirmValue(confirmValue);
             if (user.MailConfirmValue == confirmValue)
             {
                 user.MailConfirmDate = DateTime.Now;
@@ -80,6 +80,15 @@ namespace Web.Api.Controllers
 
             }
             return BadRequest("Kullanıcı veya onay hatası");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ReConfirmByUser(int userId)
+        {
+            var user = await _userService.GetUserByUserId(userId);
+            //email gönderme operasyonu
+            await _authService.SendEmailAsync(user);
+            return Ok("Mail gönderimi başarılı");
         }
     }
 }

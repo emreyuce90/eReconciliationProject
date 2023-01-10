@@ -14,5 +14,6 @@ namespace Business.Abstract
         Task<User> GetUserByEMail(string email);
         Task<User> GetUserByUserId(int id);
         Task<bool> UpdateUser(User user);
+        Task<User> GetUserByConfirmValue(string confirmValue);
     }
 }

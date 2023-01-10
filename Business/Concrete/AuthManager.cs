@@ -114,11 +114,15 @@ namespace Business.Concrete
                 Id = user.Id,
                 PasswordSalt = user.PasswordSalt
             };
+            await SendEmailAsync(user);
+               
+            return new DataResult<UserCompanyDto>(userCompanyDto, ResultStatus.Success);
+        }
 
-         
-
+        public async Task<string> SendEmailAsync(User user)
+        {
             //html kodları
-            string link = $"https://localhost:7031/api/auth/mailConfirm/{user.MailConfirmValue}";
+            string link = $"https://localhost:7031/api/auth/confirmMail/{user.MailConfirmValue}";
             string linkDescription = "Kaydı onaylamak için tıklayınız";
             string titleMessage = "Size gelen maili en geç 48 saat içerisinde onaylamalısınız";
             string message = "Hesabınız oluşturulmuştur.Lütfen email adresinize gelen aktivasyon linkine tıklayıp hesabınızı aktif ediniz";
@@ -138,7 +142,7 @@ namespace Business.Concrete
             var mailParameters = await _mailParameterService.Get(3);
             MailSendDto msDto = new()
             {
-                ToEmail = userCompanyDto.EMail,
+                ToEmail = user.EMail,
                 Body = mailData,
                 Subject = "Hesap Aktivasyonu",
                 MailParameter = mailParameters
@@ -147,15 +151,14 @@ namespace Business.Concrete
             {
                 //mail gönderimi
                 _mailSendService.SendMailAsync(msDto);
+                return $"Mail gönderimi başarılı";
             }
             catch (Exception ex)
             {
 
-                return new DataResult<UserCompanyDto>(userCompanyDto, ResultStatus.Failed, ex.Message);
+                return ex.Message;
 
             }
-
-            return new DataResult<UserCompanyDto>(userCompanyDto, ResultStatus.Success);
         }
     }
 }
