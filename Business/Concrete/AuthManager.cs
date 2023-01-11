@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Business.CrossCuttingConcerns.ValidationRules;
+using Core.CrossCuttingCoıncerns.Validation;
 using Core.Entities.Concrete;
 using Core.Utilities.Hashing;
 using Core.Utilities.JWT;
@@ -104,23 +105,26 @@ namespace Business.Concrete
             };
 
             //validate et
-            UserValidatior userValidator = new UserValidatior();
-            var validationResult =userValidator.Validate(user);
-            if (!validationResult.IsValid)
-            {
-                throw new ValidationException(validationResult.Errors);
-            }
+            ValidationHelper.ValidateObject(new UserValidatior(), user);
 
-           
+            //UserValidatior userValidator = new UserValidatior();
+            //var validationResult =userValidator.Validate(user);
+            //if (!validationResult.IsValid)
+            //{
+            //    throw new ValidationException(validationResult.Errors);
+            //}
+
+
             await _userService.AddAsync(user);
 
             //company için validasyon yaz
-            CompanyValidator companyValidator = new CompanyValidator();
-            var valResult = companyValidator.Validate(company);
-            if (!valResult.IsValid)
-            {
-                throw new ValidationException(valResult.Errors);
-            }
+            ValidationHelper.ValidateObject(new CompanyValidator(),company);
+            //CompanyValidator companyValidator = new CompanyValidator();
+            //var valResult = companyValidator.Validate(company);
+            //if (!valResult.IsValid)
+            //{
+            //    throw new ValidationException(valResult.Errors);
+            //}
             //companyyi kaydet
             await _companyService.AddAsync(company);
             //usercompanyyi kaydet
