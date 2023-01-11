@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.CrossCuttingConcerns.ValidationRules;
 using Core.Entities.Concrete;
 using Core.Utilities.Hashing;
 using Core.Utilities.JWT;
@@ -7,6 +8,7 @@ using Core.Utilities.Result.ComplexTypes;
 using Core.Utilities.Result.Concrete;
 using Domain.Concrete;
 using Domain.Concrete.Dtos;
+using FluentValidation;
 
 namespace Business.Concrete
 {
@@ -100,7 +102,25 @@ namespace Business.Concrete
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt
             };
+
+            //validate et
+            UserValidatior userValidator = new UserValidatior();
+            var validationResult =userValidator.Validate(user);
+            if (!validationResult.IsValid)
+            {
+                throw new ValidationException(validationResult.Errors);
+            }
+
+           
             await _userService.AddAsync(user);
+
+            //company için validasyon yaz
+            CompanyValidator companyValidator = new CompanyValidator();
+            var valResult = companyValidator.Validate(company);
+            if (!valResult.IsValid)
+            {
+                throw new ValidationException(valResult.Errors);
+            }
             //companyyi kaydet
             await _companyService.AddAsync(company);
             //usercompanyyi kaydet

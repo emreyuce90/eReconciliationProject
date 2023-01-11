@@ -1,12 +1,13 @@
 using Business.IoC;
 using Core.Utilities.JWT;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddBLLDependencies();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddFluentValidation(config=>config.RegisterValidatorsFromAssemblyContaining(typeof(Program)));
 //Adding CORS
 builder.Services.AddCors(opt =>
 {
