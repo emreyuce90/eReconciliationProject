@@ -1,6 +1,7 @@
 ﻿using Business.Abstract;
 using Core.Utilities.Result.ComplexTypes;
 using Domain.Concrete;
+using Domain.Concrete.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
@@ -18,7 +19,7 @@ namespace Web.Api.Controllers
             _companyService = companyService;
         }
 
-        [HttpGet]
+        [HttpGet("GetAllCompanies")]
         public async Task<IActionResult> GetCompanies()
         {
             var result = await _companyService.GetAllAsync();
@@ -31,7 +32,7 @@ namespace Web.Api.Controllers
             });
         }
 
-        [HttpPost]
+        [HttpPost("AddCompany")]
         public async Task<IActionResult> AddCompany(Company company)
         {
             if (ModelState.IsValid)
@@ -49,7 +50,7 @@ namespace Web.Api.Controllers
             }
             return BadRequest("Validasyon Hatası");
         }
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteCompany/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _companyService.DeleteAsync(id);
@@ -58,15 +59,24 @@ namespace Web.Api.Controllers
             return BadRequest(result);
         }
 
-        [HttpPut]
+        [HttpPut("UpdateCompany")]
         public async Task<IActionResult> UpdateCompany(Company company)
         {
-            var result =await _companyService.UpdateAsync(company);
-            if(result.ResultStatus == ResultStatus.Success)
+            var result = await _companyService.UpdateAsync(company);
+            if (result.ResultStatus == ResultStatus.Success)
             {
                 return Ok(result);
             }
             return BadRequest(result);
+        }
+
+        [HttpPost("AddCompanyRelationalWithUserId")]
+        public async Task<IActionResult> AddUserCompany(UserCompanyAddDto userCompanyAddDto)
+        {
+            var result = await _companyService.AddCompanyRelationalUser(userCompanyAddDto);
+            if (result.ResultStatus == ResultStatus.Success)
+                return Ok();
+            return BadRequest(result.Message);
         }
     }
 }

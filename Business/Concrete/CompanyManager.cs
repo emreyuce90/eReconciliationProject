@@ -1,9 +1,12 @@
 ﻿using Business.Abstract;
+using Business.CrossCuttingConcerns.ValidationRules;
+using Core.CrossCuttingCoıncerns.Validation;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.ComplexTypes;
 using Core.Utilities.Result.Concrete;
 using DataAccess.Abstract;
 using Domain.Concrete;
+using Domain.Concrete.Dtos;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,10 +20,12 @@ namespace Business.Concrete
     public class CompanyManager : ICompanyService
     {
         private readonly ICompanyDal _companyDal;
+        private readonly IUserCompanyService _userCompanyService;
 
-        public CompanyManager(ICompanyDal companyDal)
+        public CompanyManager(ICompanyDal companyDal, IUserCompanyService userCompanyService)
         {
             _companyDal = companyDal;
+            _userCompanyService = userCompanyService;
         }
 
         public async Task<IResult> AddAsync(Company company)
@@ -33,6 +38,19 @@ namespace Business.Concrete
             }
             return new Result(ResultStatus.Failed, $"{company.Name} adlı firma eklenemedi");
 
+        }
+
+        public async Task<IResult> AddCompanyRelationalUser(UserCompanyAddDto userCompanyAddDto)
+        {
+            ValidationHelper.ValidateObject(new CompanyValidator(), userCompanyAddDto.Company);
+            await _companyDal.AddAsync(userCompanyAddDto.Company);
+            var result = await _userCompanyService.AddAsync(userCompanyAddDto.UserId, userCompanyAddDto.Company.Id);
+            if (result.ResultStatus == ResultStatus.Success)
+            {
+                return new Result(ResultStatus.Success);
+
+            }
+            return new Result(ResultStatus.Failed, "Ekleme esnasında bir hata meydana geldi");
         }
 
         public async Task<IResult> DeleteAsync(int id)
@@ -70,7 +88,7 @@ namespace Business.Concrete
 
         public async Task<IResult> IsCompanyExists(Company company)
         {
-           bool isExists =await _companyDal.IsCompanyExists(company);
+            bool isExists = await _companyDal.IsCompanyExists(company);
             if (isExists)
             {
                 return new Result(ResultStatus.Success);
@@ -86,7 +104,7 @@ namespace Business.Concrete
             {
                 await _companyDal.SaveChangesAsync();
 
-                return new Result(ResultStatus.Success,$"{company.Name} adlı firma bilgileri güncellendi");
+                return new Result(ResultStatus.Success, $"{company.Name} adlı firma bilgileri güncellendi");
             }
             return new Result(ResultStatus.Failed, $"Bir hata meydana geldi {company.Name} adlı firma bilgiler güncellenemedi");
 

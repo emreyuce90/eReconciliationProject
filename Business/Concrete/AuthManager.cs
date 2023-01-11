@@ -104,7 +104,7 @@ namespace Business.Concrete
                 PasswordSalt = passwordSalt
             };
 
-            //validate et
+            //validate et                   //IValidator tipinde nesne +obje
             ValidationHelper.ValidateObject(new UserValidatior(), user);
 
             //UserValidatior userValidator = new UserValidatior();
