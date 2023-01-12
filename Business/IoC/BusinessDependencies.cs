@@ -43,6 +43,7 @@ namespace Business.IoC
             services.AddScoped<IMailParameterService, MailParameterManager>();
             services.AddScoped<IMailSendService,MailSendManager>();
             services.AddScoped<IMailTemplateService, MailTemplateManager>();
+            services.AddScoped<ICurrencyAccountService, CurrencyAccountManager>();
             
         }
     }

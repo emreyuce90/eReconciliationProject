@@ -44,7 +44,8 @@ namespace Business.Concrete
         {
             ValidationHelper.ValidateObject(new CompanyValidator(), userCompanyAddDto.Company);
             await _companyDal.AddAsync(userCompanyAddDto.Company);
-            var result = await _userCompanyService.AddAsync(userCompanyAddDto.UserId, userCompanyAddDto.Company.Id);
+            await _companyDal.SaveChangesAsync();
+            var result = await _userCompanyService.AddAsync(userCompanyAddDto.UserId,userCompanyAddDto.Company.Id);
             if (result.ResultStatus == ResultStatus.Success)
             {
                 return new Result(ResultStatus.Success);
