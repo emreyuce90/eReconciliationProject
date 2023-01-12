@@ -62,5 +62,32 @@ namespace Web.Api.Controllers
                 return Ok(result.Message);
             return BadRequest(result.Message);
         }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> AddExcelFile(IFormFile file, int companyId)
+        {
+            if (file.Length > 0)
+            {
+                //dosyayı isimlendir
+                var excelname = Guid.NewGuid().ToString() + ".xlsx";
+                //dosyanın yolu
+                var filePath = $"{Directory.GetCurrentDirectory()}/Content/{excelname}";
+                //create stream oluştur dosyanın yolunu ver
+                using (FileStream stream = System.IO.File.Create(filePath))
+                {
+                    //kopyala
+                    await file.CopyToAsync(stream);
+                    //temizle
+                    await stream.FlushAsync();
+                }
+
+                //Dosyayı okuyup veritabanına kayıt etme işlemi
+                var result = await _currencyAccountService.AddToExcel(filePath,companyId);
+                if(result.ResultStatus == ResultStatus.Success)
+                return Ok();
+
+            }
+            return BadRequest("Dosya seçmediniz");
+        }
     }
 }

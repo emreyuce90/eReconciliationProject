@@ -6,8 +6,10 @@ using Core.Utilities.Result.ComplexTypes;
 using Core.Utilities.Result.Concrete;
 using DataAccess.Abstract;
 using Domain.Concrete;
+using ExcelDataReader;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-
+using r = Core.Utilities.Result.Abstract;
 namespace Business.Concrete
 {
     public class CurrencyAccountManager : ICurrencyAccountService
@@ -19,9 +21,9 @@ namespace Business.Concrete
             _currencyAccountDal = currencyAccountDal;
         }
 
-        public async Task<IResult> AddAsync(CurrencyAccount currencyAccount)
+        public async Task<r.IResult> AddAsync(CurrencyAccount currencyAccount)
         {
-            ValidationHelper.ValidateObject(new CurrencyAccountValidator(),currencyAccount);
+            ValidationHelper.ValidateObject(new CurrencyAccountValidator(), currencyAccount);
             await _currencyAccountDal.AddAsync(currencyAccount);
             int save = await _currencyAccountDal.SaveChangesAsync();
             if (save > -1)
@@ -33,7 +35,60 @@ namespace Business.Concrete
 
         }
 
-        public async Task<IResult> DeleteAsync(int id)
+        public async Task<r.IResult> AddToExcel(string filePath, int companyId)
+        {
+            //Hata vermemesi için yaptığımız ayar
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            //okuma için stream oluşturuyoruz
+            using (var stream = System.IO.File.Open(filePath, FileMode.Open,FileAccess.Read))
+            {
+                //create reader oluşturup içerisine stream i veriyoruz
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    //reader okuyana kadar devam etsin
+                    while (reader.Read())
+                    {
+                        string code = reader.GetString(0);
+                        string name = reader.GetString(1);
+                        string address = reader.GetString(2);
+                        string taxdepartment = reader.GetString(3);
+                        string taxCode = reader.GetString(4);
+                        string tc = reader.GetString(5);
+                        string mail = reader.GetString(6);
+                        string authorized = reader.GetString(7);
+
+
+                        if (code != "Cari Kodu")
+                        {
+                            CurrencyAccount currencyAccount = new()
+                            {
+                                Name = name,
+                                Address = address,
+                                TaxDepartment = taxdepartment,
+                                TaxIdNumber = taxCode,
+                                AddedAt = DateTime.Now,
+                                AuthorizedPerson = authorized,
+                                Code = code,
+                                CompanyId = companyId,
+                                EMail = mail,
+                                IdentityNumber = tc,
+                                IsActive = true
+
+                            };
+                            ValidationHelper.ValidateObject(new CurrencyAccountValidator(), currencyAccount);
+                            await _currencyAccountDal.AddAsync(currencyAccount);
+                            await _currencyAccountDal.SaveChangesAsync();
+                            return new Result(ResultStatus.Success, "Excel dosyası başarıyla veritabanına kaydedildi");
+
+                        }
+
+                    }
+                }
+            }
+            return new Result(ResultStatus.Failed, "Bir hata meydana geldi");
+        }
+
+        public async Task<r.IResult> DeleteAsync(int id)
         {
             await _currencyAccountDal.DeleteAsync(id);
             int save = await _currencyAccountDal.SaveChangesAsync();
@@ -54,7 +109,7 @@ namespace Business.Concrete
             return new DataResult<CurrencyAccount>(account, ResultStatus.Success);
         }
 
-        public async Task<IResult> UpdateAsync(CurrencyAccount currencyAccount)
+        public async Task<r.IResult> UpdateAsync(CurrencyAccount currencyAccount)
         {
             ValidationHelper.ValidateObject(new CurrencyAccountValidator(), currencyAccount);
             _currencyAccountDal.Update(currencyAccount);
