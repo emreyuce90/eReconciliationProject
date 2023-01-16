@@ -78,12 +78,13 @@ namespace Business.Concrete
                             ValidationHelper.ValidateObject(new CurrencyAccountValidator(), currencyAccount);
                             await _currencyAccountDal.AddAsync(currencyAccount);
                             await _currencyAccountDal.SaveChangesAsync();
-                            return new Result(ResultStatus.Success, "Excel dosyası başarıyla veritabanına kaydedildi");
+                           
 
                         }
 
                     }
                 }
+                return new Result(ResultStatus.Success, "Excel dosyası başarıyla veritabanına kaydedildi");
             }
             return new Result(ResultStatus.Failed, "Bir hata meydana geldi");
         }
