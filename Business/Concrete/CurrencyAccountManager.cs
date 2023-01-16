@@ -104,6 +104,12 @@ namespace Business.Concrete
             return new DataResult<List<CurrencyAccount>>(await list.ToListAsync(), ResultStatus.Success);
         }
 
+        public async Task<IDataResult<CurrencyAccount>> GetCurrencyAccountByCodeandCompanyId(int companyId, string code)
+        {
+            var ca =await _currencyAccountDal.GetSingle(ca=>ca.CompanyId== companyId && ca.Code == code);
+            return new DataResult<CurrencyAccount>(ca, ResultStatus.Success);
+        }
+
         public async Task<IDataResult<CurrencyAccount>> GetSingle(int id)
         {
             var account = await _currencyAccountDal.GetSingle(ca => ca.Id == id, false);

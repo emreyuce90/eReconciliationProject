@@ -52,5 +52,26 @@ namespace Web.Api.Controllers
                 return Ok();
             return BadRequest(result.Message);
         }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> AddToExcel(int companyId, IFormFile file)
+        {
+            if (file.Length > 0)
+            {
+                string fileName = $"{Guid.NewGuid().ToString()}.xlsx";
+                string filePath = $"{Directory.GetCurrentDirectory()}/Content/{fileName}";
+                using (var stream = System.IO.File.Create(filePath))
+                {
+                    await file.CopyToAsync(stream);
+                    await stream.FlushAsync();
+                }
+
+                var result = await _accountReconciliationService.AddToExcel(filePath, companyId);
+                if (result.ResultStatus == ResultStatus.Success)
+                    return Ok(result.Message);
+                return BadRequest("Bir sorun oluştu");
+            }
+            return BadRequest("Dosya seçilmediği için işlem tamamlanamadı");
+        }
     }
 }

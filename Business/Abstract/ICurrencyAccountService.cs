@@ -13,5 +13,6 @@ namespace Business.Abstract
         Task<r.IResult> UpdateAsync(CurrencyAccount currencyAccount);
         Task<r.IResult> DeleteAsync(int id);
         Task<r.IResult> AddToExcel(string filePath, int companyId);
+        Task<IDataResult<CurrencyAccount>> GetCurrencyAccountByCodeandCompanyId(int companyId,string code);
     }
 }
