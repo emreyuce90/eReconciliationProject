@@ -45,7 +45,7 @@ namespace Business.IoC
             services.AddScoped<IMailTemplateService, MailTemplateManager>();
             services.AddScoped<ICurrencyAccountService, CurrencyAccountManager>();
             services.AddScoped<IAccountReconciliationService,AccountReconciliationManager>();
-            
+            services.AddScoped<IAccountReconciliationDetailService,AccountReconciliationDetailManager>();
         }
     }
 }
