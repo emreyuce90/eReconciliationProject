@@ -15,5 +15,6 @@ namespace Business.Abstract
         Task<IResult> AddAsync(AccountReconciliationDetail accountReconciliationDetail);
         Task<IResult> UpdateAsync(AccountReconciliationDetail accountReconciliationDetail);
         Task<IResult> DeleteAsync(int id);
+        Task<IResult> AddToExcel(string path,int reconciliationId);
     }
 }
